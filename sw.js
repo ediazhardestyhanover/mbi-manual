@@ -1,14 +1,14 @@
 /* Service worker: keeps the app and the downloaded manual available offline.
    When you publish a change, bump VERSION so phones pick up the new files. */
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const EDITION = '2026-02';
 const SHELL = 'mbi-shell-' + VERSION;
 const DATA = 'mbi-data-' + EDITION;
 const SHELL_FILES = [
   "./",
   "index.html",
-  "app.css?v=1.0.0",
-  "app.js?v=1.0.0",
+  "app.css?v=1.0.1",
+  "app.js?v=1.0.1",
   "manifest.webmanifest",
   "lib/minisearch.js",
   "lib/panzoom.min.js",

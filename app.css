@@ -209,6 +209,15 @@ h2.grp { margin: 26px 0 6px; font: 600 1.2rem/1.2 var(--font-c); color: var(--in
 .row > svg.go { color: var(--line-2); width: 20px; height: 20px; }
 .row:active { background: var(--panel); }
 
+.install-card { margin: 18px 0 6px; padding: 12px 14px 10px; border-radius: 10px; background: var(--panel); box-shadow: inset 0 0 0 2px var(--act); }
+.install-card .ic-h { display: flex; align-items: center; gap: 10px; }
+.install-card .ic-h svg { color: var(--act); }
+.install-card .ic-h b { font-weight: 600; line-height: 1.25; }
+.install-card p { margin: 6px 0 4px; font-size: .92rem; line-height: 1.4; color: var(--ink-2); }
+.install-card .steps { margin: 6px 0 4px; padding-left: 1.3em; font-size: .95rem; line-height: 1.4; }
+.install-card .steps li { margin-bottom: 5px; }
+svg.i.inl { width: 1.05em; height: 1.05em; vertical-align: -.18em; }
+
 /* ---------- search results ---------- */
 .answers { margin: 10px 0 4px; display: grid; gap: 8px; }
 .answer {
