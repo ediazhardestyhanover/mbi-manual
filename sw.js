@@ -1,18 +1,19 @@
 /* Service worker: keeps the app and the downloaded manual available offline.
    When you publish a change, bump VERSION so phones pick up the new files. */
-const VERSION = '1.0.1';
+const VERSION = '1.1.0';
 const EDITION = '2026-02';
 const SHELL = 'mbi-shell-' + VERSION;
 const DATA = 'mbi-data-' + EDITION;
 const SHELL_FILES = [
   "./",
   "index.html",
-  "app.css?v=1.0.1",
-  "app.js?v=1.0.1",
+  "app.css?v=1.1.0",
+  "app.js?v=1.1.0",
   "manifest.webmanifest",
   "lib/minisearch.js",
   "lib/panzoom.min.js",
   "data/content.json",
+  "data/thumbs.bin",
   "fonts/barlow-condensed-latin-600-normal.woff2",
   "fonts/barlow-condensed-latin-700-normal.woff2",
   "fonts/barlow-latin-400-italic.woff2",
@@ -28,7 +29,10 @@ const SHELL_FILES = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_FILES.map((u) => new Request(u, { cache: 'reload' })))));
+  e.waitUntil(caches.open(SHELL).then(async (c) => {
+    await c.addAll(SHELL_FILES.map((u) => new Request(u, { cache: 'reload' })));
+    try { await c.add(new Request('config.json', { cache: 'reload' })); } catch (err) { /* optional file */ }
+  }));
 });
 
 self.addEventListener('activate', (e) => {
@@ -48,6 +52,18 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== self.location.origin) return;
   if (req.headers.has('range')) return;
   if (url.searchParams.has('dl')) return;            // explicit offline download: go to the network
+  if (url.pathname.endsWith('/config.json')) {       // maintainer settings: network first, cached copy when offline
+    e.respondWith((async () => {
+      try {
+        const resp = await fetch(req);
+        if (resp.ok) { const copy = resp.clone(); caches.open(SHELL).then((c) => c.put('config.json', copy)); }
+        return resp;
+      } catch (err) {
+        return (await caches.match('config.json', { ignoreSearch: true })) || new Response('{}', { headers: { 'Content-Type': 'application/json' } });
+      }
+    })());
+    return;
+  }
   if (req.mode === 'navigate') {
     e.respondWith((async () => (await caches.match('index.html', { ignoreSearch: true })) || fetch(req))());
     return;
